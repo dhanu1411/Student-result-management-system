@@ -6,25 +6,57 @@ def get_marks(subject):
 
     while True:
 
-        marks = int(input(f"{subject} marks: "))
+        try:
+            marks = int(input(f"{subject} marks: "))
 
-        if 0 <= marks <= 100:
-            return marks
+            if 0 <= marks <= 100:
+                return marks
 
-        print("Invalid marks! Enter marks between 0 and 100.")
+            print("Invalid marks! Enter marks between 0 and 100.")
+
+        except ValueError:
+            print("Please enter a valid number.")
 
 
 filename = "student_results.xlsx"
 
 # Check if file exists
 if os.path.exists(filename):
+
     workbook = load_workbook(filename)
     sheet = workbook.active
+
+    headers = [cell.value for cell in sheet[1]]
+
+    # Add Status column if missing
+    if "Status" not in headers:
+
+        sheet.cell(row=1, column=len(headers) + 1).value = "Status"
+
+        headers = [cell.value for cell in sheet[1]]
+
+    # Update old records with Pass/Fail status
+    status_col = headers.index("Status") + 1
+
+    for row in range(2, sheet.max_row + 1):
+
+        if sheet.cell(row=row, column=status_col).value is None:
+
+            tamil = sheet.cell(row=row, column=2).value
+            english = sheet.cell(row=row, column=3).value
+            maths = sheet.cell(row=row, column=4).value
+            science = sheet.cell(row=row, column=5).value
+
+            if tamil < 35 or english < 35 or maths < 35 or science < 35:
+                sheet.cell(row=row, column=status_col).value = "Fail"
+            else:
+                sheet.cell(row=row, column=status_col).value = "Pass"
+
 else:
+
     workbook = Workbook()
     sheet = workbook.active
 
-    # Heading row
     sheet.append([
         "Name",
         "Tamil",
@@ -66,7 +98,7 @@ for i in range(num):
     else:
         grade = "Fail"
 
-    # Pass/Fail Status
+    # Pass / Fail Status
     if tamil < 35 or english < 35 or maths < 35 or science < 35:
         status = "Fail"
     else:
@@ -85,7 +117,7 @@ for i in range(num):
         status
     ])
 
-# Save file
+# Save Excel file
 workbook.save(filename)
 
 print("\nData added successfully!")
