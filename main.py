@@ -16,7 +16,7 @@ def get_marks(subject):
 
 filename = "student_results.xlsx"
 
-# Check if Excel file exists
+# Check if file exists
 if os.path.exists(filename):
     workbook = load_workbook(filename)
     sheet = workbook.active
@@ -24,7 +24,7 @@ else:
     workbook = Workbook()
     sheet = workbook.active
 
-    # Create heading row only once
+    # Heading row
     sheet.append([
         "Name",
         "Tamil",
@@ -33,7 +33,8 @@ else:
         "Science",
         "Total",
         "Average",
-        "Grade"
+        "Grade",
+        "Status"
     ])
 
 # Number of students
@@ -65,6 +66,12 @@ for i in range(num):
     else:
         grade = "Fail"
 
+    # Pass/Fail Status
+    if tamil < 35 or english < 35 or maths < 35 or science < 35:
+        status = "Fail"
+    else:
+        status = "Pass"
+
     # Add data to Excel
     sheet.append([
         name,
@@ -74,10 +81,11 @@ for i in range(num):
         science,
         total,
         average,
-        grade
+        grade,
+        status
     ])
 
-# Save Excel file
+# Save file
 workbook.save(filename)
 
 print("\nData added successfully!")
